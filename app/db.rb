@@ -1,6 +1,3 @@
-ENV["RACK_ENV"] ||= "development"
-ENV["DB_NAME"] ||= "dailybread_#{ENV.fetch("RACK_ENV")}"
-
 module DB
   QUERIES = {
     all_recurring_bills: %(
@@ -18,14 +15,33 @@ module DB
   end
 
   def self.query(sql)
-    result = connection.exec(sql)
+    Records.new(connection.exec(sql))
+  end
 
-    result.values.map do |values|
-      Record.new(result.fields.zip(values.flatten).to_h)
+  class Records
+    include Enumerable
+
+    attr_reader :result, :records
+
+    def initialize(result)
+      @result = result
+      @records = result.values.map do |values|
+        Record.new(result.fields.zip(values.flatten).to_h)
+      end
+    end
+
+    def each(&block)
+      records.each(&block)
+    end
+
+    def to_json
+      records.map { |r| r.attrs }.to_json
     end
   end
 
   class Record
+    attr_reader :attrs
+
     def initialize(attrs)
       @attrs = attrs
     end

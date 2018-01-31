@@ -1,19 +1,6 @@
-ENV["RACK_ENV"] = "test"
-
-require 'bundler'
-Bundler.require
-
-require_relative "../app/db"
-
-RSpec.configure do |config|
-  config.expect_with(:rspec) { |c| c.syntax = :should }
-end
+require "spec_helper"
 
 RSpec.describe "DB Queries" do
-  before(:all) do
-    system("bin/reset")
-  end
-
   it "returns billing expenses" do
     DB.connection.exec("
       insert into recurring_bills (name, amount_in_pennies, pay_period)

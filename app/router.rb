@@ -7,7 +7,7 @@ class Router
     req = Rack::Request.new env
     case req.path
     when "/"
-      Rack::Response.new({ a: "b" }.to_json)
+      Rack::Response.new(DB.all_recurring_bills.to_json)
     else
       Rack::Response.new({ error: "Not found" }.to_json, 404)
     end
