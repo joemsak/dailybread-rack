@@ -19,7 +19,7 @@ class Router
     when "/"
       Rack::Response.new({ a: "b" }.to_json)
     else
-      Rack::Response.new({ error: "Not found" }, 404)
+      Rack::Response.new({ error: "Not found" }.to_json, 404)
     end
   end
 end
