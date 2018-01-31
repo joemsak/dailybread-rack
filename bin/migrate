@@ -13,7 +13,7 @@ ls migrations/*.sql | sort -n | while read fn; do
   psql_exit_status=$?
 
   if [ $psql_exit_status != 0 ]; then
-    echo "psql failed: " $fn
+    echo "psql failed: $fn"
     exit $psql_exit_status
   fi
 
