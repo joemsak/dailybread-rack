@@ -35,7 +35,7 @@ module DB
     end
 
     def to_json
-      records.map { |r| r.attrs }.to_json
+      map(&:attrs).to_json
     end
   end
 
