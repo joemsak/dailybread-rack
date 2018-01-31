@@ -1,7 +1,6 @@
 require 'bundler'
 Bundler.require
 
-require 'rack'
 require_relative 'router'
 
 use Rack::ContentType, "application/json"
