@@ -7,15 +7,15 @@ module DB
       @returns = Returns.new(returns)
     end
 
-    def method_missing(method, *args)
-      sql.send(method, *args)
+    def method_missing(method, *args, &block)
+      sql.send(method, *args, &block)
     end
 
     def returning(&block)
       block.call(returns)
     end
 
-    class Returns < Struct.new(:returns)
+    Returns = Struct.new(:returns) do
       def one(&block)
         block.call if returns == :one
       end

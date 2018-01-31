@@ -20,9 +20,15 @@ module DB
     def to_json
       if count > 1
         map(&:attrs).to_json
-      else
+      elsif count == 1
         first.attrs.to_json
+      else
+        [].to_json
       end
+    end
+
+    def method_missing(method, *args, &block)
+      records.send(method, *args, &block)
     end
   end
 end

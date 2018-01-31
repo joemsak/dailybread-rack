@@ -46,4 +46,8 @@ RSpec.describe "DB Queries" do
     DB.last_recurring_bill.amount_in_pennies.should == nil
     DB.last_recurring_bill.pay_period.should == nil
   end
+
+  it "returns empty collections for empty query results" do
+    DB.all_recurring_bills.to_json.should == "[]"
+  end
 end
