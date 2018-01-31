@@ -5,9 +5,9 @@ require 'bundler'
 Bundler.require
 
 require_relative "app/db"
-require_relative 'app/router'
+require_relative 'app/routes'
 
 use Rack::ContentType, "application/json"
 use Rack::Reloader, 0
 
-run ROUTER
+run ROUTES
