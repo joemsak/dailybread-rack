@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+dropdb dailybread
+createdb dailybread
+
+psql -v ON_ERROR_STOP=ON dailybread -c "
+  create table if not exists migrations(
+    name text not null);
+
+  create unique index migrations_name_idx on migrations (name);
+"
+
+bin/migrate

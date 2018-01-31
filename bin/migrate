@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+ls migrations/*.sql | sort -n | while read fn; do
+  result=`psql dailybread -c "select * from migrations where name = '$fn';"`
+
+  if [[ $result != *"0 rows"* ]]; then
+    echo "psql skipped: $fn"
+    continue
+  fi
+
+  psql -v ON_ERROR_STOP=ON dailybread -f "$fn"
+
+  psql_exit_status=$?
+
+  if [ $psql_exit_status != 0 ]; then
+    echo "psql failed: " $fn
+    exit $psql_exit_status
+  fi
+
+  psql -v ON_ERROR_STOP=ON dailybread -c "insert into migrations (name) values('$fn');"
+  echo "psql migrated: $fn"
+done
+
+exit 0
