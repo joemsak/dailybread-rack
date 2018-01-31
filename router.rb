@@ -10,8 +10,7 @@ module DB
   end
 end
 
-puts DB.query("select * from recurring_bills")
-aouejif
+puts DB.query("select * from recurring_bills").values
 
 class Router
   def self.call(env)
