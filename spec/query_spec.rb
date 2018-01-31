@@ -16,4 +16,27 @@ RSpec.describe "DB Queries" do
 
     results.map(&:name).should == ["credit cards", "savings"]
   end
+
+  it "creates recurring bills" do
+    DB.create_recurring_bill("car payment", 36800, 2)
+
+    result = DB.last_recurring_bill
+
+    result.id.should_not be_nil
+    result.name.should == "car payment"
+    result.amount_in_pennies.should == "36800"
+    result.pay_period.should == "2"
+  end
+
+  it "returns the last recurring bill" do
+    DB.create_recurring_bill("car payment", 36800, 2)
+    DB.create_recurring_bill("car insurance", 27400, 1)
+
+    result = DB.last_recurring_bill
+
+    result.id.should_not be_nil
+    result.name.should == "car insurance"
+    result.amount_in_pennies.should == "27400"
+    result.pay_period.should == "1"
+  end
 end

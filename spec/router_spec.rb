@@ -59,7 +59,7 @@ RSpec.describe "Routes" do
       }),
       { 'CONTENT_TYPE' => 'application/json' })
 
-      JSON.parse(last_response.body)["id"].should_not == nil
+      JSON.parse(last_response.body)["id"].should_not be_nil
     end
   end
 end
