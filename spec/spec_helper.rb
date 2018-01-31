@@ -4,6 +4,8 @@ ENV["DB_NAME"] ||= "dailybread_#{ENV.fetch("RACK_ENV")}"
 require 'bundler'
 Bundler.require
 
+require 'rspec'
+
 require_relative "../app/db"
 
 RSpec.configure do |config|

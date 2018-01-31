@@ -1,7 +1,18 @@
+require 'securerandom'
+
 module DB
   QUERIES = {
     all_recurring_bills: %(
       select * from recurring_bills;
+    ),
+
+    create_recurring_bill: %(
+      insert into recurring_bills (name, amount_in_pennies, pay_period)
+      values($1, $2, $3);
+    ),
+
+    last_recurring_bill: %(
+      select * from recurring_bills order by id desc limit 1;
     ),
   }
 
@@ -9,13 +20,16 @@ module DB
     @@connection ||= PG::Connection.new(dbname: ENV.fetch("DB_NAME"))
   end
 
-  def self.method_missing(method)
+  def self.method_missing(method, *args)
     sql = QUERIES.fetch(method)
-    query(sql)
+    query(sql, *args)
   end
 
-  def self.query(sql)
-    Records.new(connection.exec(sql))
+  def self.query(sql, *args)
+    statement_name = SecureRandom.base64
+    connection.prepare(statement_name, sql);
+    result = connection.exec_prepared(statement_name, args.flatten);
+    Records.new(result)
   end
 
   class Records
@@ -35,7 +49,11 @@ module DB
     end
 
     def to_json
-      map(&:attrs).to_json
+      if count > 1
+        map(&:attrs).to_json
+      else
+        first.attrs.to_json
+      end
     end
   end
 
