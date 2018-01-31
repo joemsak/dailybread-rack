@@ -39,4 +39,11 @@ RSpec.describe "DB Queries" do
     result.amount_in_pennies.should == "27400"
     result.pay_period.should == "1"
   end
+
+  it "returns empty records when they don't exist" do
+    DB.last_recurring_bill.id.should == nil
+    DB.last_recurring_bill.name.should == nil
+    DB.last_recurring_bill.amount_in_pennies.should == nil
+    DB.last_recurring_bill.pay_period.should == nil
+  end
 end
