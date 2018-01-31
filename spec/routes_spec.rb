@@ -31,6 +31,22 @@ RSpec.describe ROUTES do
         "25000",
       ]
     end
+
+    it "returns a single bill in a collection" do
+      DB.create_recurring_bill("savings", 25_000, 1)
+
+      get("/")
+
+      JSON.parse(last_response.body).map { |j| j['name'] }.should == [
+        "savings",
+      ]
+
+      JSON.parse(last_response.body).map { |j|
+        j['amount_in_pennies']
+      }.should == [
+        "25000",
+      ]
+    end
   end
 
   describe "POST /" do

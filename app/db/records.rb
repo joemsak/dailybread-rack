@@ -18,13 +18,7 @@ module DB
     end
 
     def to_json
-      if count > 1
-        map(&:attrs).to_json
-      elsif count == 1
-        first.attrs.to_json
-      else
-        [].to_json
-      end
+      map(&:attrs).to_json
     end
 
     def method_missing(method, *args, &block)
