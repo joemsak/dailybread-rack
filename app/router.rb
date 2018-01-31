@@ -22,7 +22,13 @@ class Router
     req = Rack::Request.new(env)
 
     if callable = @routes[req.request_method][req.path]
-      Rack::Response.new(callable.call(req.body))
+      resp = callable.call(req.body)
+
+      if resp == "error"
+        Rack::Response.new({}.to_json, 400)
+      else
+        Rack::Response.new(resp)
+      end
     else
       not_found
     end

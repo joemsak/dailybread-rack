@@ -50,6 +50,13 @@ RSpec.describe ROUTES do
   end
 
   describe "POST /" do
+    it "handles empty params okay" do
+      post("/", JSON.generate({}),
+        { 'CONTENT_TYPE' => 'application/json' })
+
+      last_response.status.should == 400
+    end
+
     it "creates new recurring bills in the db" do
       post("/", JSON.generate({
         name: "car payment",
