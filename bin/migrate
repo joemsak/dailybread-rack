@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
+RACK_ENV=${RACK_ENV-"development"}
+DB_NAME="dailybread_$RACK_ENV"
+
 ls migrations/*.sql | sort -n | while read fn; do
-  result=`psql dailybread -c "select * from migrations where name = '$fn';"`
+  result=`psql $DB_NAME -c "select * from migrations where name = '$fn';"`
 
   if [[ $result != *"0 rows"* ]]; then
     echo "psql skipped: $fn"
     continue
   fi
 
-  psql -v ON_ERROR_STOP=ON dailybread -f "$fn"
+  psql -v ON_ERROR_STOP=ON $DB_NAME -f "$fn"
 
   psql_exit_status=$?
 
@@ -17,7 +20,7 @@ ls migrations/*.sql | sort -n | while read fn; do
     exit $psql_exit_status
   fi
 
-  psql -v ON_ERROR_STOP=ON dailybread -c "insert into migrations (name) values('$fn');"
+  psql -v ON_ERROR_STOP=ON $DB_NAME -c "insert into migrations (name) values('$fn');"
   echo "psql migrated: $fn"
 done
 

@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
-dropdb dailybread
-createdb dailybread
+RACK_ENV=${RACK_ENV-"development"}
+DB_NAME="dailybread_$RACK_ENV"
 
-psql -v ON_ERROR_STOP=ON dailybread -c "
+dropdb $DB_NAME
+createdb $DB_NAME
+
+psql -v ON_ERROR_STOP=ON $DB_NAME -c "
   create table if not exists migrations(
     name text not null);
 
