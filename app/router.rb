@@ -30,12 +30,8 @@ class Router
       resp = callable.call(req.body)
       Rack::Response.new(resp.body, resp.status, resp.headers)
     else
-      not_found
+      Rack::Response.new({ error: "Not found" }.to_json, 404)
     end
-  end
-
-  def not_found
-    Rack::Response.new({ error: "Not found" }.to_json, 404)
   end
 
   private
