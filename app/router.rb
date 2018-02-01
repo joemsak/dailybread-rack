@@ -10,6 +10,11 @@ class Router
     instance_eval(&block)
   end
 
+  def respond(*args)
+    body, opts = arrange_args(args)
+    Response.new(body, opts[:status], opts[:headers])
+  end
+
   def get(path, &block)
     @routes["GET"][path] = block
   end
@@ -23,7 +28,7 @@ class Router
 
     if callable = @routes[req.request_method][req.path]
       resp = callable.call(req.body)
-      Rack::Response.new(resp.body, resp.status_code, resp.headers)
+      Rack::Response.new(resp.body, resp.status, resp.headers)
     else
       not_found
     end
@@ -33,23 +38,33 @@ class Router
     Rack::Response.new({ error: "Not found" }.to_json, 404)
   end
 
-  class ErrorResponse
-    attr_reader :body, :status_code, :headers
-
-    def initialize(status_code)
-      @status_code = status_code
-      @body = ""
-      @headers = {}
+  private
+  def arrange_args(args)
+    if args[0].is_a?(Hash)
+      opts_idx = 0
+      body = ""
+    else
+      body = args[0] || ""
+      opts_idx = 1
     end
+
+    args[opts_idx] ||= {}
+
+    opts = {
+      status: args[opts_idx].fetch(:status) { 200 },
+      headers: args[opts_idx].fetch(:headers) { {} },
+    }
+
+    return body, opts
   end
 
-  class ValidResponse
-    attr_reader :body, :status_code, :headers
+  class Response
+    attr_reader :body, :status, :headers
 
-    def initialize(body)
+    def initialize(body, status, headers)
       @body = body
-      @status_code = 200
-      @headers = {}
+      @status = status
+      @headers = headers
     end
   end
 end

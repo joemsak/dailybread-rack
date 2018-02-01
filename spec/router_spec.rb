@@ -9,11 +9,15 @@ RSpec.describe Router do
   def app
     app = Router.new do
       get "/" do
-        Router::ValidResponse.new("you found it!")
+        respond "you found it!"
+      end
+
+      get "/error" do
+        respond status: 400
       end
 
       post "/" do
-        Router::ValidResponse.new("you created it!")
+        respond "you created it!"
       end
     end
 
@@ -31,6 +35,11 @@ RSpec.describe Router do
     post("/foo/bar")
     last_response.status.should == 404
     JSON.parse(last_response.body)["error"].should == "Not found"
+  end
+
+  it "handles an error response" do
+    get("/error")
+    last_response.status.should == 400
   end
 
   it "supports defined GET routes" do
