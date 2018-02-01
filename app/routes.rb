@@ -7,14 +7,14 @@ ROUTES = Router.new do
     json = JSON.parse(body.read)
 
     if json.values.empty?
-      "error"
+      Router::ErrorResponse.new(400)
     else
       DB.create_recurring_bill(json.values)
-      DB.last_recurring_bill.to_json
+      Router::ValidResponse.new(DB.last_recurring_bill.to_json)
     end
   end
 
   get "/" do
-    DB.all_recurring_bills.to_json
+    Router::ValidResponse.new(DB.all_recurring_bills.to_json)
   end
 end

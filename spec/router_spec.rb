@@ -9,11 +9,11 @@ RSpec.describe Router do
   def app
     app = Router.new do
       get "/" do
-        "you found it!"
+        Router::ValidResponse.new("you found it!")
       end
 
       post "/" do
-        "you created it!"
+        Router::ValidResponse.new("you created it!")
       end
     end
 

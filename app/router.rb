@@ -23,12 +23,7 @@ class Router
 
     if callable = @routes[req.request_method][req.path]
       resp = callable.call(req.body)
-
-      if resp == "error"
-        Rack::Response.new({}.to_json, 400)
-      else
-        Rack::Response.new(resp)
-      end
+      Rack::Response.new(resp.body, resp.status_code, resp.headers)
     else
       not_found
     end
@@ -36,5 +31,25 @@ class Router
 
   def not_found
     Rack::Response.new({ error: "Not found" }.to_json, 404)
+  end
+
+  class ErrorResponse
+    attr_reader :body, :status_code, :headers
+
+    def initialize(status_code)
+      @status_code = status_code
+      @body = ""
+      @headers = {}
+    end
+  end
+
+  class ValidResponse
+    attr_reader :body, :status_code, :headers
+
+    def initialize(body)
+      @body = body
+      @status_code = 200
+      @headers = {}
+    end
   end
 end
