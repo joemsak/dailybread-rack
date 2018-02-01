@@ -1,8 +1,4 @@
-require 'securerandom'
-
-require_relative "db/query"
 require_relative "db/queries"
-require_relative "db/records"
 
 module DB
   def self.connection
@@ -10,28 +6,17 @@ module DB
   end
 
   def self.method_missing(method, *args)
-    sql = QUERIES.fetch(method)
-    query(sql, *args)
+    query_spec = QUERIES.fetch(method)
+    query(query_spec, *args)
   end
 
-  def self.query(sql, *args)
-    statement_name = SecureRandom.base64
-    formatted = sql.split(" ").join(" ")
+  def self.query(query_spec, *args)
+    statement_name = Time.now.to_f.to_s
 
-    connection.prepare(statement_name, formatted)
+    connection.prepare(statement_name, query_spec.sql)
 
     result = connection.exec_prepared(statement_name, args.flatten);
 
-    sql.returning do |returns|
-      returns.one {
-        return Record.new(
-          result.fields.zip(result.values.flatten).to_h
-        )
-      }
-
-      returns.many {
-        return Records.new(result)
-      }
-    end
+    query_spec.handle_result(result)
   end
 end

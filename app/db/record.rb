@@ -2,8 +2,12 @@ module DB
   class Record
     attr_reader :attrs
 
-    def initialize(attrs)
-      @attrs = attrs
+    def initialize(result)
+      if result.is_a?(PG::Result)
+        @attrs = result.fields.zip(result.values.flatten).to_h
+      elsif result.is_a?(Hash)
+        @attrs = result
+      end
     end
 
     def method_missing(method)

@@ -1,3 +1,5 @@
+require_relative "query"
+
 module DB
   QUERIES = {
     all_recurring_bills: Query.new(sql: %(
